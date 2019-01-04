@@ -23,6 +23,16 @@ app.post('/todos',(req, res)=>{
 })
 
 
+app.get('/todos',(req, res)=>{
+    TodoModel.find({}).then((todos)=>{
+        console.log(todos);
+        res.send(todos);
+    }).catch(err=>{
+        res.status(400).send(err);
+        console.log(err);
+    })
+})
+
 
 
 module.exports={app};
