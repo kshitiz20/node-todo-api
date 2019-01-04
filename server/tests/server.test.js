@@ -116,3 +116,34 @@ describe('Get /todos/:id',()=>{
             .end(done)
     })
 }) 
+
+
+describe('Delete /todos/:id',()=>{
+
+    it('should delete a todo based on id', (done)=>{
+
+        request(app)
+            .delete(`/todos/${todos[1]._id.toHexString()}`)
+            .expect(200)
+            .expect((res)=>{
+                expect(res.body._id).toBe(todos[1]._id.toHexString());
+            })
+            .end(done);
+    })
+
+    it('should return a 404 when id not found in DB',(done)=>{
+        var testID= new ObjectId();
+        request(app)
+            .delete(`/todos/${testID.toHexString}`)
+            .expect(404)
+            .end(done);
+    })
+
+    it('should return a 404 for non object IDs', (done)=>{
+
+        request(app)
+            .delete(`/todos/123abc`)
+            .expect(404)
+            .end(done)
+    })
+}) 
