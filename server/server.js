@@ -1,6 +1,6 @@
 var express=require('express');
 var bodyParser= require('body-parser');
-
+var _= require('lodash')
 var {mongoose}= require('./db/mongoose.js');
 var {TodoModel}= require('./model/todo');
 var {UserModel}= require('./model/user');
@@ -68,6 +68,35 @@ app.delete('/todos/:id',(req, res)=>{
     }).catch(e=>{
         res.status(404).send(e);
     })
+})
+
+app.put('/todos/:id',(req, res)=>{
+
+    var id= req.params.id;
+    if(!ObjectID.isValid(id)){
+        return res.status(404).send('Invalid Id format');
+    }
+
+    var body= _.pick(req.body,["text","completed"]);
+
+    if(_.isBoolean(req.body.completed)&& req.body.completed==true){
+        body.completedAt= new Date().getTime();
+    }
+    else{
+        body.completed=false;
+        body.completedAt=null;
+    }
+
+    TodoModel.findByIdAndUpdate(id,{$set:body},{new:true}).then((todo)=>{
+        if(!todo){
+            return res.status(404).send("No such item");
+        }
+        console.log("Item updated successfully", todo);
+        return res.send(todo);
+    }).catch(e=>{
+        res.status(404).send(e)
+    })
+
 })
 
 
