@@ -33,6 +33,23 @@ app.get('/todos',(req, res)=>{
     })
 })
 
+app.get('/todos/:id',(req, res)=>{
+    var id= req.params.id;
+
+    TodoModel.findById(id).then((result)=>{
+        if(result==null){
+            res.status(400).send("Id not found")
+            return console.log('Id not found in DB');
+        }
+
+        res.send(result);
+        console.log(result);
+    }).catch(e=>{
+        res.status(400).send(e);
+        console.log('Invalid Id', e);
+    })
+})
+
 
 
 module.exports={app};
