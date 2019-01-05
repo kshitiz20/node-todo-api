@@ -11,7 +11,9 @@ var todos=[{
     text:"First Test Todo"
 },{
     _id: new ObjectId(),
-    text:"Second Test todo"
+    text:"Second Test todo",
+    completed:true,
+    completedAt:333
 }]
 
 beforeEach((done)=>{
@@ -147,3 +149,39 @@ describe('Delete /todos/:id',()=>{
             .end(done)
     })
 }) 
+
+describe('PUT /todos/:id', ()=>{
+
+    it('should update the value in db',(done)=>{
+        var textTOBeUpdated= "Updated test text";
+        request(app)
+        .put(`/todos/${todos[0]._id.toHexString()}`)
+        .send({
+            text:textTOBeUpdated,
+            completed:true
+        })
+        .expect(200)
+        .expect((res)=>{
+            expect(res.body.text).toBe(textTOBeUpdated);
+            expect(res.body.completed).toBe(true);
+            expect(typeof res.body.completedAt).toBe('number');
+        }).end(done);
+
+    })
+
+    it('should clear completedAt if completed is false', (done)=>{
+        
+        request(app)
+            .put(`/todos/${todos[1]._id.toHexString()}`)
+            .send({
+                completed:false
+            })
+            .expect(200)
+            .expect((res)=>{
+                expect(res.body.completed).toBe(false);
+                expect(res.body.completedAt).toBe(null)
+                
+            }).end(done)
+    })
+
+})
