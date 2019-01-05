@@ -108,8 +108,8 @@ module.exports={app};
 
 
 
-app.listen(3000,()=>{
-    console.log('Sun raha hai na tu, Ro raha hu me at port 3000');
+app.listen(port,()=>{
+    console.log(`Sun raha hai na tu, Ro raha hu me at port ${port}`);
 })
 
 
