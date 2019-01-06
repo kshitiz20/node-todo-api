@@ -101,6 +101,28 @@ app.put('/todos/:id',(req, res)=>{
 
 })
 
+//**************************USER Requests*********************** */
+
+app.post('/users',(req, res)=>{
+
+
+    var body= _.pick(req.body,["email","password"]);
+    var newUser= new UserModel(body);
+    console.log(newUser)
+    newUser.save().then((user)=>{
+            
+        console.log('New User Registered', user);
+       return newUser.generateAuthToken();
+
+    }).then((token)=>{
+        res.header("x-auth", token).send(newUser);
+    }).catch((err)=>{
+        console.log('There is some error', err);
+        res.status(400).send(err);
+    })
+
+})
+
 
 
 module.exports={app};
