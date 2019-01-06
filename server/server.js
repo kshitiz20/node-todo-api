@@ -109,9 +109,9 @@ app.post('/users',(req, res)=>{
     var body= _.pick(req.body,["email","password"]);
     var newUser= new UserModel(body);
     console.log(newUser)
-    newUser.save().then((user)=>{
+    newUser.save().then(()=>{
             
-        console.log('New User Registered', user);
+        console.log('New User Registered', newUser);
        return newUser.generateAuthToken();
 
     }).then((token)=>{
@@ -121,6 +121,25 @@ app.post('/users',(req, res)=>{
         res.status(400).send(err);
     })
 
+})
+
+
+
+app.get('/users/me',(req, res)=>{
+    var token= req.header('x-auth');
+    console.log(req);
+
+    console.log(token);
+    UserModel.findByToken(token).then((user)=>{
+        console.log(user);
+        if(!user){
+            res.send(401).send();
+       }
+        res.send(user);
+
+    }).catch((e)=>{
+        res.status(401).send();
+    })
 })
 
 
