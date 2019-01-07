@@ -7,7 +7,7 @@ var {mongoose}= require('./db/mongoose.js');
 var {TodoModel}= require('./model/todo');
 var {UserModel}= require('./model/user');
 var {ObjectID}= require('mongodb');
-
+var {authenticate}= require('./middleware/authenticate.js')
 const port= process.env.PORT;
 
 const app= express();
@@ -104,8 +104,6 @@ app.put('/todos/:id',(req, res)=>{
 //**************************USER Requests*********************** */
 
 app.post('/users',(req, res)=>{
-
-
     var body= _.pick(req.body,["email","password"]);
     var newUser= new UserModel(body);
     console.log(newUser)
@@ -125,21 +123,9 @@ app.post('/users',(req, res)=>{
 
 
 
-app.get('/users/me',(req, res)=>{
-    var token= req.header('x-auth');
-    console.log(req);
 
-    console.log(token);
-    UserModel.findByToken(token).then((user)=>{
-        console.log(user);
-        if(!user){
-            res.send(401).send();
-       }
-        res.send(user);
-
-    }).catch((e)=>{
-        res.status(401).send();
-    })
+app.get('/users/me',authenticate,(req, res)=>{
+   res.send(req.user);
 })
 
 
