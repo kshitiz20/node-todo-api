@@ -65,7 +65,7 @@ UserSchema.statics.findByToken=function(token){
     try{
 
         decoded= jwt.verify(token, "abc123");
-        console.log(decoded);
+        //console.log(decoded);
 
     }catch(e){
         return new Promise((resolve, reject)=>{
@@ -84,11 +84,11 @@ UserSchema.statics.findByToken=function(token){
 
 UserSchema.pre('save',function(next){
     var user= this;
-    console.log(user);
+   // console.log(user);
     if(user.isModified('password')){
         bcrypt.genSalt(10,(err,salt)=>{
             bcrypt.hash(user.password,salt, (err, hash)=>{
-                console.log(hash);
+                //console.log(hash);
                 user.password=hash;
                 next();
             })
