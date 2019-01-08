@@ -84,6 +84,7 @@ describe('Get /todos/:id',()=>{
 
         request(app)
             .get(`/todos/${todos[0]._id.toHexString()}`)
+            .set('x-auth', users[0].tokens[0].token)
             .expect(200)
             .expect((res)=>{
                 expect(res.body.text).toBe(todos[0].text);
@@ -95,6 +96,7 @@ describe('Get /todos/:id',()=>{
         var testID= new ObjectId();
         request(app)
             .get(`/todos/${testID.toHexString}`)
+            .set('x-auth', users[0].tokens[0].token)
             .expect(404)
             .end(done);
     })
@@ -103,6 +105,7 @@ describe('Get /todos/:id',()=>{
 
         request(app)
             .get(`/todos/123abc`)
+            .set('x-auth', users[0].tokens[0].token)
             .expect(404)
             .end(done)
     })
@@ -115,6 +118,7 @@ describe('Delete /todos/:id',()=>{
 
         request(app)
             .delete(`/todos/${todos[1]._id.toHexString()}`)
+            .set('x-auth', users[1].tokens[0].token)
             .expect(200)
             .expect((res)=>{
                 expect(res.body._id).toBe(todos[1]._id.toHexString());
@@ -126,6 +130,7 @@ describe('Delete /todos/:id',()=>{
         var testID= new ObjectId();
         request(app)
             .delete(`/todos/${testID.toHexString}`)
+            .set('x-auth', users[1].tokens[0].token)
             .expect(404)
             .end(done);
     })
@@ -134,6 +139,7 @@ describe('Delete /todos/:id',()=>{
 
         request(app)
             .delete(`/todos/123abc`)
+            .set('x-auth', users[1].tokens[0].token)
             .expect(404)
             .end(done)
     })
@@ -145,6 +151,7 @@ describe('PUT /todos/:id', ()=>{
         var textTOBeUpdated= "Updated test text";
         request(app)
         .put(`/todos/${todos[0]._id.toHexString()}`)
+        .set('x-auth', users[0].tokens[0].token)
         .send({
             text:textTOBeUpdated,
             completed:true
@@ -162,6 +169,7 @@ describe('PUT /todos/:id', ()=>{
         
         request(app)
             .put(`/todos/${todos[1]._id.toHexString()}`)
+            .set('x-auth', users[1].tokens[0].token)
             .send({
                 completed:false
             })
@@ -259,7 +267,6 @@ describe('Post /users/login',()=>{
 
 describe('Delete /users/me/token',()=>{
     it('should remove the auth token on logout',(done)=>{
-
         request(app)
             .delete('/users/me/token')
             .set('x-auth', users[0].tokens[0].token)

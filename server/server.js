@@ -42,10 +42,12 @@ app.get('/todos', authenticate,(req, res)=>{
     })
 })
 
-app.get('/todos/:id',(req, res)=>{
+app.get('/todos/:id',authenticate,(req, res)=>{
     var id= req.params.id;
 
-    TodoModel.findById(id).then((todos)=>{
+    TodoModel.findOne({_id:id,
+    _creator:req.user._id
+    }).then((todos)=>{
         if(todos===null){
             res.status(404).send("Id not found")
             return console.log('Id not found in DB');
@@ -59,14 +61,14 @@ app.get('/todos/:id',(req, res)=>{
     })
 })
 
-app.delete('/todos/:id',(req, res)=>{
+app.delete('/todos/:id',authenticate,(req, res)=>{
     var id= req.params.id;
 
     if(!ObjectID.isValid(id)){
         return res.status(404).send('Invalid Id format');
     }
 
-    TodoModel.findOneAndDelete({_id:id}).then((todos)=>{
+    TodoModel.findOneAndDelete({_id:id, _creator:req.user._id}).then((todos)=>{
 
        if(todos==null){
            return res.status(404).send("No such item");
@@ -78,7 +80,7 @@ app.delete('/todos/:id',(req, res)=>{
     })
 })
 
-app.put('/todos/:id',(req, res)=>{
+app.put('/todos/:id',authenticate,(req, res)=>{
 
     var id= req.params.id;
     if(!ObjectID.isValid(id)){
@@ -95,7 +97,7 @@ app.put('/todos/:id',(req, res)=>{
         body.completedAt=null;
     }
 
-    TodoModel.findByIdAndUpdate(id,{$set:body},{new:true}).then((todo)=>{
+    TodoModel.findOneAndUpdate({_id:id,_creator:req.user},{$set:body},{new:true}).then((todo)=>{
         if(!todo){
             return res.status(404).send("No such item");
         }
