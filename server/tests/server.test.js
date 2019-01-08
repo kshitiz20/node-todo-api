@@ -4,6 +4,7 @@ const {ObjectId}= require('mongodb')
 
 const {app}= require('./../server');
 const {TodoModel}= require('./../model/todo')
+const {UserModel}= require('./../model/user')
 const {todos, populateTodos, users, populateUsers}= require('./seed/seed.js')
 
 
@@ -250,5 +251,28 @@ describe('Post /users/login',()=>{
             .send({email:"absbbsb@example.com",password:"abc123!2"})
             .expect(400)
             .end(done);
+    })
+})
+
+describe('Delete /users/me/token',()=>{
+    it('should remove the auth token on logout',(done)=>{
+
+        request(app)
+            .delete('/users/me/token')
+            .set('x-auth', users[0].tokens[0].token)
+            .expect(200)
+            .end((err, res)=>{
+                if(err){
+                    done(err);
+                }
+
+                UserModel.findById(users[0]._id).then(user=>{
+                    expect(user.tokens.length).toBe(0);
+                    done();
+                }).catch(e=>{
+                    done(err);
+                })
+
+            })
     })
 })
