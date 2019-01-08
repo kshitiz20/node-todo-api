@@ -231,3 +231,24 @@ describe('Post /users',()=>{
     })
 
 })
+
+describe('Post /users/login',()=>{
+    it('should return a user when a valid login credentials are passed',(done)=>{
+        request(app)
+            .post('/users/login')
+            .send({email:users[0].email, password:users[0].password})
+            .expect(200)
+            .expect((res)=>{
+                expect(res.body.email).toEqual(users[0].email)
+                expect(res.headers['x-auth']).toBeTruthy();
+            }).end(done);
+    })
+
+    it('should return a 400 bad request when invalid credentials', (done)=>{
+        request(app)
+            .post('/users/login')
+            .send({email:"absbbsb@example.com",password:"abc123!2"})
+            .expect(400)
+            .end(done);
+    })
+})
