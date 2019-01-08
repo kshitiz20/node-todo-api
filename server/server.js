@@ -14,8 +14,11 @@ const app= express();
 
 app.use(bodyParser.json());
 
-app.post('/todos',(req, res)=>{
-    var newTodo= new TodoModel(req.body);
+app.post('/todos',authenticate,(req, res)=>{
+    var newTodo= new TodoModel({
+        text:req.body.text,
+        _creator:req.user._id
+            });
     newTodo.save().then((result) => {
         console.log("New Todo Successfully save");
         res.send(result)
@@ -26,8 +29,11 @@ app.post('/todos',(req, res)=>{
 })
 
 
-app.get('/todos',(req, res)=>{
-    TodoModel.find({}).then((todos)=>{
+app.get('/todos', authenticate,(req, res)=>{
+    TodoModel.find({
+        _creator:req.user._id
+
+    }).then((todos)=>{
         console.log(todos);
         res.send(todos);
     }).catch(err=>{
